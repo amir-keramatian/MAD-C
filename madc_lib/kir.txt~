@@ -1,0 +1,130 @@
+std::string envMap::serializeTheMap(){
+  std::string result;
+  
+  std::vector<object> thisMapObjects = getObjects();
+  std::vector<object>::iterator currentMapObjectIterator = thisMapObjects.begin();
+
+  std::ostringstream strs;
+
+  strs << thisMapObjects.size() << ",";
+  
+  while(currentMapObjectIterator != thisMapObjects.end()){ //iterater over objects in the current map
+
+    object thisObject = *currentMapObjectIterator;
+
+    strs << "obj" << ","
+	 << thisObject.x_lower_bound << ","
+	 << thisObject.x_upper_bound << ","
+	 << thisObject.z_lower_bound << ","
+	 << thisObject.z_upper_bound << ",";
+
+    strs << thisObject.ellipsoids.size() << ",";
+    
+    std::vector<Stone*>::iterator thisObjectsEllipsoids = thisObject.ellipsoids.begin();
+
+    while(thisObjectsEllipsoids != thisObject.ellipsoids.end()){
+
+      Stone* stoneInCurrentMap = *thisObjectsEllipsoids;
+      strs << stoneInCurrentMap->serializeTheStone();
+      
+      thisObjectsEllipsoids++;
+    }
+    
+    currentMapObjectIterator++;
+  }
+
+  result = strs.str();
+  return result;
+}
+
+envMap::envMap(){}
+
+envMap::envMap(std::string serializedMap){
+
+  char *saveptr;
+  char* token;
+
+  token = strtok_r (const_cast<char*>(serializedMap.c_str()), ",", &saveptr);
+  
+  int numberOfObjects = std::atoi(token);
+  std::cout << "Number of Objects: " << numberOfObjects << std::endl;
+
+  
+  for (int obj = 0; obj < numberOfObjects; obj++){
+
+    Stone* parent_ellipsoid;
+    
+    token = strtok_r (NULL, ",",&saveptr);
+    assert(strcmp(token, "obj") == 0 );
+
+    double x_lower_bound = atof(strtok_r (NULL, ",",&saveptr));
+    double x_upper_bound = atof(strtok_r (NULL, ",",&saveptr));
+    double z_lower_bound = atof(strtok_r (NULL, ",",&saveptr));
+    double z_upper_bound = atof(strtok_r (NULL, ",",&saveptr));
+    int numberOfEllipsoids = atoi(strtok_r (NULL, ",",&saveptr));
+
+    /*std::cout << "x_lower_bound = " << x_lower_bound << std::endl;
+    std::cout << "x_upper_bound = " << x_upper_bound << std::endl;
+    std::cout << "z_lower_bound = " << z_lower_bound << std::endl;
+    std::cout << "z_upper_bound = " << z_upper_bound << std::endl;
+
+    std::cout << "number of ellipsoids = " << numberOfEllipsoids << std::endl;
+    */
+    
+    for (int ellips = 0; ellips < numberOfEllipsoids; ellips++){
+
+      int offset_signature = atoi(strtok_r (NULL, ",",&saveptr));
+      int id = atoi(strtok_r (NULL, ",",&saveptr));
+
+      std::cout << "\t offset_signature= " << offset_signature << std::endl;
+      std::cout << "\t id = " << id << std::endl;
+      
+      gsl_matrix* characteristic_matrix = gsl_matrix_alloc(4,4);
+      for (int i = 0; i < 4; ++i)
+	{
+	  for (int j = 0; j < 4; ++j)
+	    {
+	      gsl_matrix_set(characteristic_matrix, i, j, atof(strtok_r (NULL, ",",&saveptr)));
+	    }
+	}
+
+
+      gsl_matrix* characteristic_matrix_inverse = gsl_matrix_alloc(4, 4);
+      for (int i = 0; i < 4; ++i)
+	{
+	  for (int j = 0; j < 4; ++j)
+	    {
+	      gsl_matrix_set(characteristic_matrix_inverse, i, j, atof(strtok_r (NULL, ",",&saveptr)));
+	    }
+	}
+
+      Stone* ellipsoid = new Stone(id);
+      ellipsoid->offset_signature = offset_signature;
+      ellipsoid->x_lower_bound = x_lower_bound;
+      ellipsoid->x_upper_bound = x_upper_bound;
+      ellipsoid->z_lower_bound = z_lower_bound;
+      ellipsoid->z_upper_bound = z_upper_bound;
+
+      if(ellips == 0){
+	parent_ellipsoid = ellipsoid;
+	//	parent_ellipsoid
+      }
+
+      ellipsoid->setParent(parent_ellipsoid);
+      ellipsoid->characteristic_matrix = characteristic_matrix;
+      ellipsoid->characteristic_matrix_inverse = characteristic_matrix_inverse;
+      ellipsoid->clean_mu_cov = true;
+
+      this->insertStone(*ellipsoid);
+    }
+  }
+
+
+
+  
+  /*  while(std::getline(iss, token, ',')) {
+    std::cout << token << '\n';
+  } 
+  */
+  std::cout << std::endl;
+}

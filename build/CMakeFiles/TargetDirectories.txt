@@ -1,0 +1,3 @@
+/home/amirke/MAD-C/tokhmiClustering/build/CMakeFiles/rebuild_cache.dir
+/home/amirke/MAD-C/tokhmiClustering/build/CMakeFiles/edit_cache.dir
+/home/amirke/MAD-C/tokhmiClustering/build/CMakeFiles/cluster_extraction.dir

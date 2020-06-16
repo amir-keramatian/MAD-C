@@ -1,0 +1,19 @@
+#ifndef NETWORKCONFIG
+#define NETWORKCONFIG
+
+#define OD_1 "10.0.0.100"
+#define OD_2 "10.0.0.101"
+#define OD_3 "10.0.0.102"
+#define OD_4 "10.0.0.111"
+#define OD_5 "10.0.0.112"
+
+#define OFFSET 4
+
+#define NUMBER_OF_CHILDREN 0
+
+#define PARENT OD_1
+
+#define PORT_NUMBER_TO_CONNECT_TO 1236
+
+
+#endif

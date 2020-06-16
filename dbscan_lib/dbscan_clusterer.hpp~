@@ -1,0 +1,2 @@
+void DBSCAN_cluster_extraction(std::vector<idxXYZ>*, std::vector<std::vector<int> >&, double, int);
+void DBSCAN_cluster_extraction_V2(std::vector<idxXYZ>*, std::vector<std::vector<int> >&, double, int);
